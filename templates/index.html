@@ -1,0 +1,160 @@
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        font-family: "Rubik", "sans-serif";
+    }
+
+    .genstruct {
+        text-align: center;
+        margin-top: 50px;
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-bottom: 50px;
+    }
+
+    h1 {
+        color: #8c03fc;
+        font-size: 30pt;
+    }
+
+    p {
+        font-size: 15pt;
+    }
+
+    .slidecontainer {
+        width: 80%; /* Width of the outside container */
+        text-align: right;
+    }
+
+    /* The slider itself */
+    .slider {
+        -webkit-appearance: none;
+        width: 80%;
+        height: 15px;
+        border-radius: 5px;  
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%; 
+        background: #8c03fc;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #8c03fc;
+        cursor: pointer;
+    }
+
+    .button {
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 15px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .button1 {
+        background-color: white; 
+        color: black; 
+        border: 2px solid #8c03fc;
+        border-radius: 5px; 
+    }
+
+    .button1:hover {
+        background-color: #8c03fc;
+        color: white;
+        border: 2px solid #8c03fc;
+        border-radius: 5px;
+    }
+
+    .formdiv {
+        text-align: left;
+    }
+</style>
+
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function cb(selection) {
+            $.getJSON({
+                url: "/callback", data: { 'data': selection }, success: function (result) {
+                    Plotly.newPlot('chart', result, {staticPlot: true});;
+                }
+            });
+        }
+    </script>
+</head>
+
+<div class = "genstruct">
+    <h1>&#128293 Choose Your Vibe! &#128293</h1>
+    <p>Choose the audio features of your next song:</p>
+    <div class="formdiv">
+        <form method="POST">
+            <input type="range" min="0" max="100" name="EnergyRange" class="slider"/>
+            <label for="EnergyRange">Energy</label> <br>
+            <input type="range" min="0" max="100" name="ValenceRange" class="slider"/>
+            <label for="ValenceRange">Valence</label> <br>
+            <input type="range" min="0" max="100" name="DanceabilityRange" class="slider"/>
+            <label for="DanceabilityRange">Danceability</label> <br>
+            <input type="range" min="0" max="100" name="AcousticnessRange" class="slider"/>
+            <label for="AcousticnessRange">Acousticness</label> <br>
+            <input type="submit" value="submit audio features" class="button button1" />
+        </form>
+    </div>
+    <p>&#127925 Chosen song: {{song_str}}</p>
+    <a href="{{url}}" class="button button1">Listen to the song!</a>
+    <br>
+    <p>Song Datapoint Visualisation</p>
+    <div id="song_chart" class="chart"></div>
+    <p>Experiment Data Visualisation</p>
+    <form method="POST", action='graph'>
+        <label for="x-var">Choose audio feature:</label>
+        <select name="x-var" id="x-var" class="button button1">
+            <option value="acousticness">Acousticness</option>
+            <option value="danceability">Danceability</option>
+            <option value="energy">Energy</option>
+            <option value="instrumentalness">instrumentalness</option>
+            <option value="liveness">Liveness</option>
+            <option value="loudness">Loudness</option>
+            <option value="speechiness">Speechiness</option>
+            <option value="tempo">Tempo</option>
+            <option value="valence">Valence</option>
+        </select>
+        <label for="y-var">Choose a biological feature:</label>
+        <select name="y-var" id="y-var" class="button button1">
+            <option value="EDA">EDA</option>
+            <option value="TEMP">Temperature</option>
+            <option value="HR">Heart Rate</option>
+        </select>
+        <input type="submit" value="plot" class="button button1"/>
+    </form>
+    <div id="siot_chart" class="chart"></div>
+</div>
+<script>
+    d = {{ songs_graphJSON | safe }};
+    Plotly.newPlot('song_chart', d, {});
+</script>
+<script>
+    d = {{ siot_graphJSON | safe }};
+    Plotly.newPlot('siot_chart', d, {});
+</script>
